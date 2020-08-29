@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Log;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -26,8 +24,6 @@ public class Hardware {
     public DcMotor BRM;
     public DcMotor FLM;
     public DcMotor FRM;
-    public DcMotor flywheelL;
-    public DcMotor flywheelR;
 
     public DcMotor encoderX;
     public DcMotor encoderRight;
@@ -35,13 +31,7 @@ public class Hardware {
 
     public Blinker expansion_Hub_2;
 
-    public TouchSensor touch;
-
     public ElapsedTime RunTime = new ElapsedTime();
-
-    public Servo claw;
-    public Servo push;
-    public CRServo pulley;
 
     BNO055IMU Imu;
     public Orientation prevAngles = new Orientation();
@@ -49,6 +39,7 @@ public class Hardware {
 
     public double WHEEL_DIAMETER = 1.37795;
     public double rotWheelDistance = 2;
+
     public Hardware(){
 
     }
@@ -59,8 +50,6 @@ public class Hardware {
         BRM = hardwareMap.dcMotor.get("BRM");
         FLM = hardwareMap.dcMotor.get("FLM");
         FRM = hardwareMap.dcMotor.get("FRM");
-        flywheelL = hardwareMap.dcMotor.get("flywheelL");
-        flywheelR = hardwareMap.dcMotor.get("flywheelR");
 
         encoderX = hardwareMap.dcMotor.get("encoderX");
         encoderRight = hardwareMap.dcMotor.get("encoderRight");
@@ -69,12 +58,6 @@ public class Hardware {
         // showing which direction the robot moves
         FRM.setDirection(DcMotorSimple.Direction.REVERSE);
         BRM.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // getting servos from phone
-        claw = hardwareMap.servo.get("claw");
-        push = hardwareMap.servo.get("push");
-        pulley = hardwareMap.crservo.get("pulley");
-        touch = hardwareMap.touchSensor.get ("touch");
 
         // setting parameters for gyro
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -159,7 +142,7 @@ public class Hardware {
         stop();
     }
 
-    public double getAngle(){
+    public double getAngleIMU(){
         //set current angles to where the robot is facing
         Orientation currAngles=Imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //angle change is the difference between where the robot is facing currently and where it used to face
@@ -180,7 +163,7 @@ public class Hardware {
         return globalAngle;
     }
 
-    public void resetAngle(){
+    public void resetAngleIMU(){
         //stores where the robot is facing as where the robot was previously facing
         prevAngles=Imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         // set where the robot is facing as 0
@@ -206,9 +189,9 @@ public class Hardware {
         while(getX() != xTarget && getY() != yTarget){
             if(theta >= 0 && theta < Math.PI/2){
                 FRM.setPower(rot);
-                FLM.setPower(power1 *  rot);
+                FLM.setPower(power1 * rot);
                 BLM.setPower(rot);
-                BRM.setPower(power1 *  rot);
+                BRM.setPower(power1 * rot);
             }
             else if(theta >= Math.PI/2 && theta < Math.PI){
                 FRM.setPower(-power2 * rot);

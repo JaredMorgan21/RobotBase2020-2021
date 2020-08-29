@@ -14,12 +14,13 @@ public class OdometryReadings extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            telemetry.addData("Rotation: ", robot.getAngleOdoDegrees());
+            telemetry.addData("RotationIMU: ", robot.getAngleIMU());
+            telemetry.addData("RotationOdo: ", robot.getAngleOdoDegrees());
             telemetry.addData("X: ", robot.getX());
             telemetry.addData("Y: ", robot.getY());
             telemetry.addData("Left: ", robot.getLeft());
             telemetry.addData("Right: ", robot.getRight());
-            telemetry.addData("X: ", robot.getX());
+            telemetry.update();
         }
     }
 }

@@ -63,9 +63,16 @@ public class YellowDetector extends OpenCvPipeline {
                     Imgproc.rectangle(imgFinal, rect, new Scalar(0, 0, 255), 1);
                     isDetected = true;
                 }
+                else{
+                    isDetected = false;
+                }
             }
         }
 
         return imgFinal;
+    }
+
+    public boolean detected(){
+        return isDetected;
     }
 }

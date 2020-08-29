@@ -15,11 +15,6 @@ import java.util.Locale;
 
 public class CVTest extends LinearOpMode {
 
-    private DcMotor BLM;
-    private DcMotor BRM;
-    private DcMotor FLM;
-    private DcMotor FRM;
-
     private OpenCvCamera phoneCam;
     private YellowDetector yellowDetector;
     private MarkerDetector markerDetector;
@@ -100,16 +95,4 @@ public class CVTest extends LinearOpMode {
         phoneCam.closeCameraDevice();
     }
 
-    // positive is for clockwise motion, negative is counter-clockwise
-    public void turn(double power,int time){
-        BLM.setPower(power);
-        BRM.setPower(-power);
-        FLM.setPower(power);
-        FRM.setPower(-power);
-        sleep(time);
-        BLM.setPower(0);
-        BRM.setPower(0);
-        FLM.setPower(0);
-        FRM.setPower(0);
-    }
 }

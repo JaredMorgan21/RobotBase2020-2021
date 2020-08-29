@@ -17,7 +17,7 @@ public class OdometryTest extends LinearOpMode {
             //forward until 100 ticks
             robot.forward(1);
             while(opModeIsActive() && robot.getX() < 100){
-                telemetry.addData("X:", robot.getX());
+                telemetry.addData("X: ", robot.getX());
                 telemetry.update();
             }
             robot.stop();
@@ -25,7 +25,7 @@ public class OdometryTest extends LinearOpMode {
             //right until 100 ticks
             robot.sideways(1);
             while(opModeIsActive() && robot.getY() < 100){
-                telemetry.addData("Y:", robot.getY());
+                telemetry.addData("Y: ", robot.getY());
                 telemetry.update();
         }
             robot.stop();
@@ -33,11 +33,13 @@ public class OdometryTest extends LinearOpMode {
             //diagonal until 100 ticks each
             robot.diagonal(1);
             while(opModeIsActive() && robot.getX() < 200 && robot.getY() < 200){
-                telemetry.addData("Y:", robot.getY());
-                telemetry.addData("X:", robot.getX());
+                telemetry.addData("Y: ", robot.getY());
+                telemetry.addData("X: ", robot.getX());
                 telemetry.update();
             }
             robot.stop();
+
+            robot.go2Point(12, 12);
 
             //turn until 90 ticks
             robot.turn(1);
@@ -46,8 +48,6 @@ public class OdometryTest extends LinearOpMode {
                 telemetry.update();
             }
             robot.stop();
-
-            robot.go2Point(12, 12);
         }
     }
 }
