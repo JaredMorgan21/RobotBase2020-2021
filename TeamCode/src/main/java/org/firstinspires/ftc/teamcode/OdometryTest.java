@@ -16,16 +16,16 @@ public class OdometryTest extends LinearOpMode {
 
             //forward until 100 ticks
             robot.forward(1);
-            while(opModeIsActive() && robot.getX() < 100){
-                telemetry.addData("X: ", robot.getX());
+            while(opModeIsActive() && robot.getY() < 100){
+                telemetry.addData("Y: ", robot.getY());
                 telemetry.update();
             }
             robot.stop();
 
             //right until 100 ticks
             robot.sideways(1);
-            while(opModeIsActive() && robot.getY() < 100){
-                telemetry.addData("Y: ", robot.getY());
+            while(opModeIsActive() && robot.getX() < 100){
+                telemetry.addData("X: ", robot.getX());
                 telemetry.update();
         }
             robot.stop();

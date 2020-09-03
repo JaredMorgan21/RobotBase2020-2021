@@ -38,7 +38,12 @@ public class Hardware {
     public Gyroscope imu;
 
     public double WHEEL_DIAMETER = 1.37795;
-    public double rotWheelDistance = 2;
+    public double TICKS_PER_REV = 800;
+    public double ROT_WHEEL_DISTANCE = 12;
+
+    public int prevX = 0;
+    public int prevRight = 0;
+    public int prevLeft = 0;
 
     public Hardware(){
 
@@ -76,19 +81,19 @@ public class Hardware {
     }
 
     public int getRight(){
-        return encoderRight.getCurrentPosition();
+        return (int) (encoderRight.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevRight;
     }
 
     public int getLeft(){
-        return encoderLeft.getCurrentPosition();
+        return (int) (encoderLeft.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevLeft;
     }
 
     public int getX(){
-        return encoderX.getCurrentPosition();
+        return (int) (encoderX.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevX;
     }
 
     public int getY(){
-        return (getRight() + getLeft())/2;
+        return (int) ((getRight() + getLeft())/2);
     }
 
     public void forward(double power){
@@ -124,24 +129,6 @@ public class Hardware {
         FRM.setPower(-power);
     }
 
-    public void go2Point(int x, int y){
-        while(getX() < x){
-            sideways(1);
-        }
-        while(getX() > x){
-            sideways(-.1);
-        }
-        stop();
-
-        while(getY() < y){
-            forward(1);
-        }
-        while(getY() > y){
-            forward(-.1);
-        }
-        stop();
-    }
-
     public double getAngleIMU(){
         //set current angles to where the robot is facing
         Orientation currAngles=Imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -171,50 +158,55 @@ public class Hardware {
     }
 
     public double getAngleOdo(){
-        return 2*Math.abs(getRight() - getLeft())/WHEEL_DIAMETER;
+        return (getLeft() - getRight())/ROT_WHEEL_DISTANCE;
     }
 
-    public double getAngleOdoDegrees(){
-        return Math.toDegrees(getAngleOdo());
+    public int getAngleOdoDegrees(){
+        return (int) Math.toDegrees(getAngleOdo());
     }
 
-    public void go2Point2(int xTarget, int yTarget){
-        double dX = xTarget - getX();
-        double dY = yTarget - getY();
-        double theta = Math.atan2(dY, dX);
-        double rot = Math.cos(getAngleOdo());
-        double power1 = Math.tan(Math.tan(theta - Math.PI/4));
-        double power2 = Math.tan(Math.tan(theta + Math.PI/4));
-
+    public void go2Point(int xTarget, int yTarget){
         while(getX() != xTarget && getY() != yTarget){
-            if(theta >= 0 && theta < Math.PI/2){
-                FRM.setPower(rot);
-                FLM.setPower(power1 * rot);
-                BLM.setPower(rot);
-                BRM.setPower(power1 * rot);
+            double dX = xTarget - getX();
+            double dY = yTarget - getY();
+            double theta = Math.atan2(dY, dX);
+            double power1 = Math.tan(Math.tan(theta - Math.PI/4));
+            double power2 = Math.tan(Math.tan(theta + Math.PI/4));
+
+            if(theta > -Math.PI && theta <= -Math.PI/2){
+                FRM.setPower(-1);
+                FLM.setPower(-power1);
+                BLM.setPower(-1);
+                BRM.setPower(-power1);
             }
-            else if(theta >= Math.PI/2 && theta < Math.PI){
-                FRM.setPower(-power2 * rot);
-                FLM.setPower(rot);
-                BLM.setPower(-power2 * rot);
-                BRM.setPower(rot);
+            else if(theta > -Math.PI/2 && theta <= 0){
+                FRM.setPower(power2);
+                FLM.setPower(-1);
+                BLM.setPower(power2);
+                BRM.setPower(-1);
             }
-            else if(theta >= Math.PI && theta < 3*Math.PI/2){
-                FRM.setPower(-rot);
-                FLM.setPower(-power1 * rot);
-                BLM.setPower(-rot);
-                BRM.setPower(-power1 * rot);
+            else if(theta > 0 && theta <= Math.PI/2){
+                FRM.setPower(1);
+                FLM.setPower(power1);
+                BLM.setPower(1);
+                BRM.setPower(power1);
             }
-            else if(theta >= 3*Math.PI/2 && theta < 2*Math.PI){
-                FRM.setPower(power2 *  rot);
-                FLM.setPower(-rot);
-                BLM.setPower(power2 *  rot);
-                BRM.setPower(-rot);
+            else if(theta > Math.PI/2 && theta <= Math.PI){
+                FRM.setPower(-power2);
+                FLM.setPower(1);
+                BLM.setPower(-power2);
+                BRM.setPower(1);
             }
             else{
                 break;
             }
         }
+    }
+
+    public void resetEncoders(){
+        prevX = getX();
+        prevRight = getRight();
+        prevLeft = getLeft();
     }
 }
 

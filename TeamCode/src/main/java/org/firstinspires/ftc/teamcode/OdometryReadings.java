@@ -14,6 +14,11 @@ public class OdometryReadings extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
+            robot.BLM.setPower(gamepad1.left_stick_x + gamepad1.left_stick_y + gamepad1.right_stick_x);
+            robot.BLM.setPower(-gamepad1.left_stick_x + gamepad1.left_stick_y - gamepad1.right_stick_x);
+            robot.BLM.setPower(-gamepad1.left_stick_x + gamepad1.left_stick_y + gamepad1.right_stick_x);
+            robot.BLM.setPower(gamepad1.left_stick_x + gamepad1.left_stick_y - gamepad1.right_stick_x);
+
             telemetry.addData("RotationIMU: ", robot.getAngleIMU());
             telemetry.addData("RotationOdo: ", robot.getAngleOdoDegrees());
             telemetry.addData("X: ", robot.getX());
