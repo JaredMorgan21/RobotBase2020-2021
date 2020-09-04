@@ -27,7 +27,7 @@ public class OdometryTest extends LinearOpMode {
             while(opModeIsActive() && robot.getX() < 100){
                 telemetry.addData("X: ", robot.getX());
                 telemetry.update();
-        }
+            }
             robot.stop();
 
             //diagonal until 100 ticks each
@@ -39,7 +39,9 @@ public class OdometryTest extends LinearOpMode {
             }
             robot.stop();
 
-            robot.go2Point(12, 12);
+            if(opModeIsActive()){
+                robot.go2Point(12, 12);
+            }
 
             //turn until 90 ticks
             robot.turn(1);
