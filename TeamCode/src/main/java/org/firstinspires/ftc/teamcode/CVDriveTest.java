@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -12,7 +13,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 public class CVDriveTest extends LinearOpMode {
     private Hardware robot = new Hardware();
 
-    private OpenCvCamera phoneCam;
+    private OpenCvCamera webcam;
     private YellowDetector yellowDetector;
 
     @Override
@@ -20,14 +21,13 @@ public class CVDriveTest extends LinearOpMode {
         robot.init(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-
-        phoneCam.openCameraDevice();
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
+        webcam.openCameraDevice();
 
         yellowDetector = new YellowDetector();
-        phoneCam.setPipeline(yellowDetector);
+        webcam.setPipeline(yellowDetector);
 
-        phoneCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+        webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
 
         waitForStart();
         if(opModeIsActive()){
