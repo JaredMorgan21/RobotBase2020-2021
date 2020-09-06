@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Odometry Readings", group="Test")
 public class OdometryReadings extends LinearOpMode {
-    private Hardware robot = new Hardware();
+    private Hardware robot = new Hardware(this);
 
     @Override
     public void runOpMode() {

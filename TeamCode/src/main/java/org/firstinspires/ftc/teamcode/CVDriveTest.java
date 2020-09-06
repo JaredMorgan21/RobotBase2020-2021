@@ -11,7 +11,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name="CV Drive Test", group="Test")
 public class CVDriveTest extends LinearOpMode {
-    private Hardware robot = new Hardware();
+    private Hardware robot = new Hardware(this);
 
     private OpenCvCamera webcam;
     private YellowDetector yellowDetector;

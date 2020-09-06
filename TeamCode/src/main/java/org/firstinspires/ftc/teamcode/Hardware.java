@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class Hardware {
     double globalAngle;
     double currentAngle;
+    LinearOpMode opMode;
 
     public DcMotor BLM;
     public DcMotor BRM;
@@ -41,10 +43,6 @@ public class Hardware {
     public double TICKS_PER_REV = 1;
     public double ROT_WHEEL_DISTANCE = 12;
 
-    public int prevX = 0;
-    public int prevRight = 0;
-    public int prevLeft = 0;
-
     int x;
     int y;
     double rotY = 0;
@@ -53,8 +51,8 @@ public class Hardware {
     int startY = 0;
     int startX = 0;
 
-    public Hardware() {
-
+    public Hardware(LinearOpMode opMode) {
+        this.opMode = opMode;
     }
 
     public void init(HardwareMap hardwareMap) {
@@ -174,7 +172,7 @@ public class Hardware {
     }
 
     public void go2Point(int xTarget, int yTarget){
-        while(x != xTarget || y != yTarget){
+        while((x != xTarget || y != yTarget) && opMode.opModeIsActive()){
             double dX = xTarget - x;
             double dY = yTarget - y;
             double theta = Math.atan2(dY, dX) + getAngleOdo();
@@ -220,7 +218,7 @@ public class Hardware {
     public void turnOdo(int angle){
         double inX = x;
         double inY = y;
-        while(getAngleOdoDegrees() != angle){
+        while(getAngleOdoDegrees() != angle && opMode.opModeIsActive()){
             double angDiff = Math.abs(angle - getAngleOdoDegrees());
             double power;
             if(angDiff <= 45){
@@ -239,7 +237,7 @@ public class Hardware {
 
     public void turnIMU(int angle){
         double angDiff = angle - getAngleOdoDegrees();
-        while(getAngleOdoDegrees() != angle){
+        while(getAngleOdoDegrees() != angle && opMode.opModeIsActive()){
             double power = (angle - getAngleOdoDegrees()) / angDiff;
             turn(power);
         }
