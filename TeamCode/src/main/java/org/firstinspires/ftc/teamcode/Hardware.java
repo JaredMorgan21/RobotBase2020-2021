@@ -235,7 +235,6 @@ public class Hardware {
         stop();
         rotX += x - inX;
         rotY += y - inY;
-        //resetEncoders();
     }
 
     public void turnIMU(int angle){
