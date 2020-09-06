@@ -38,18 +38,26 @@ public class Hardware {
     public Gyroscope imu;
 
     public double WHEEL_DIAMETER = 1.37795;
-    public double TICKS_PER_REV = 800;
+    public double TICKS_PER_REV = 1;
     public double ROT_WHEEL_DISTANCE = 12;
 
     public int prevX = 0;
     public int prevRight = 0;
     public int prevLeft = 0;
 
-    public Hardware(){
+    int x;
+    int y;
+    double rotY = 0;
+    double rotX = 0;
+
+    int startY = 0;
+    int startX = 0;
+
+    public Hardware() {
 
     }
 
-    public void init(HardwareMap hardwareMap){
+    public void init(HardwareMap hardwareMap) {
         //Getting Motor Name From Phone
         BLM = hardwareMap.dcMotor.get("BLM");
         BRM = hardwareMap.dcMotor.get("BRM");
@@ -80,20 +88,20 @@ public class Hardware {
         Imu.initialize(parameters);
     }
 
-    public int getRight(){
-        return (int) (encoderRight.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevRight;
+    public double getRight(){
+        return (encoderRight.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) + startY;
     }
 
-    public int getLeft(){
-        return (int) (encoderLeft.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevLeft;
+    public double getLeft(){
+        return (encoderLeft.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) + startY;
     }
 
-    public int getX(){
-        return (int) (encoderX.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) - prevX;
+    public double getX(){
+        return (encoderX.getCurrentPosition() / TICKS_PER_REV * Math.PI * WHEEL_DIAMETER) + startX;
     }
 
-    public int getY(){
-        return (int) ((getRight() + getLeft())/2);
+    public double getY(){
+        return (getRight() + getLeft())/2;
     }
 
     public void forward(double power){
@@ -166,47 +174,86 @@ public class Hardware {
     }
 
     public void go2Point(int xTarget, int yTarget){
-        while(getX() != xTarget && getY() != yTarget){
-            double dX = xTarget - getX();
-            double dY = yTarget - getY();
-            double theta = Math.atan2(dY, dX);
-            double power1 = Math.tan(Math.tan(theta - Math.PI/4));
-            double power2 = Math.tan(Math.tan(theta + Math.PI/4));
+        while(x != xTarget || y != yTarget){
+            double dX = xTarget - x;
+            double dY = yTarget - y;
+            double theta = Math.atan2(dY, dX) + getAngleOdo();
 
-            if(theta > -Math.PI && theta <= -Math.PI/2){
-                FRM.setPower(-1);
-                FLM.setPower(-power1);
-                BLM.setPower(-1);
-                BRM.setPower(-power1);
+            while(theta > Math.PI){
+                theta -= 2*Math.PI;
             }
-            else if(theta > -Math.PI/2 && theta <= 0){
-                FRM.setPower(power2);
+            while(theta <= -Math.PI){
+                theta += 2*Math.PI;
+            }
+            updatePos();
+
+            double power1 = Math.tan(theta - Math.PI/4);
+            double power2 = Math.tan(theta + Math.PI/4);
+            if(theta > -Math.PI && theta <= -Math.PI/2){
+                FRM.setPower(-power1);
                 FLM.setPower(-1);
-                BLM.setPower(power2);
+                BLM.setPower(-power1);
                 BRM.setPower(-1);
             }
-            else if(theta > 0 && theta <= Math.PI/2){
-                FRM.setPower(1);
-                FLM.setPower(power1);
-                BLM.setPower(1);
-                BRM.setPower(power1);
+            else if(theta > -Math.PI/2 && theta <= 0){
+                FRM.setPower(-1);
+                FLM.setPower(power2);
+                BLM.setPower(-1);
+                BRM.setPower(power2);
             }
-            else if(theta > Math.PI/2 && theta <= Math.PI){
-                FRM.setPower(-power2);
+            else if(theta > 0 && theta <= Math.PI/2){
+                FRM.setPower(power1);
                 FLM.setPower(1);
-                BLM.setPower(-power2);
+                BLM.setPower(power1);
                 BRM.setPower(1);
             }
-            else{
-                break;
+            else if(theta > Math.PI/2 && theta <= Math.PI){
+                FRM.setPower(1);
+                FLM.setPower(-power2);
+                BLM.setPower(1);
+                BRM.setPower(-power2);
             }
+        }
+        stop();
+    }
+
+    public void turnOdo(int angle){
+        double inX = x;
+        double inY = y;
+        while(getAngleOdoDegrees() != angle){
+            double angDiff = Math.abs(angle - getAngleOdoDegrees());
+            double power;
+            if(angDiff <= 45){
+                power = (double) (angle - getAngleOdoDegrees()) / 45;
+            }
+            else{
+                power = angle - getAngleOdoDegrees();
+            }
+            turn(power);
+            updatePos();
+        }
+        stop();
+        rotX += x - inX;
+        rotY += y - inY;
+        //resetEncoders();
+    }
+
+    public void turnIMU(int angle){
+        double angDiff = angle - getAngleOdoDegrees();
+        while(getAngleOdoDegrees() != angle){
+            double power = (angle - getAngleOdoDegrees()) / angDiff;
+            turn(power);
         }
     }
 
-    public void resetEncoders(){
-        prevX = getX();
-        prevRight = getRight();
-        prevLeft = getLeft();
+    public void initEncoders(int startX, int startY){
+        this.startX = startX;
+        this.startY = startY;
+    }
+
+    //update in angle causes change to x and y
+    public void updatePos(){
+        x = (int) (getX() * Math.cos(getAngleOdo()) + getY() * Math.sin(getAngleOdo()) - rotX);
+        y = (int) (getX() * -Math.sin(getAngleOdo()) + getY() * Math.cos(getAngleOdo()) - rotY);
     }
 }
-
