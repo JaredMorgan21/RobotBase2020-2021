@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -15,7 +16,7 @@ import java.util.Locale;
 
 public class CVTest extends LinearOpMode {
 
-    private OpenCvCamera phoneCam;
+    private OpenCvCamera webcam;
     private YellowDetector yellowDetector;
     private MarkerDetector markerDetector;
 
@@ -23,16 +24,15 @@ public class CVTest extends LinearOpMode {
     public void runOpMode() {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-
-        phoneCam.openCameraDevice();
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
+        webcam.openCameraDevice();
 
         yellowDetector = new YellowDetector();
         markerDetector = new MarkerDetector();
 
-        phoneCam.setPipeline(markerDetector);
+        webcam.setPipeline(yellowDetector);
 
-        phoneCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+        webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
 
         waitForStart();
 
@@ -42,18 +42,13 @@ public class CVTest extends LinearOpMode {
             /*
              * Send some stats to the telemetry
              */
-
-//            if(yellowDetector.isDetected){
-//
-//            }
-
             telemetry.addData("Detected State: ", yellowDetector.isDetected);
-            telemetry.addData("Frame Count", phoneCam.getFrameCount());
-            telemetry.addData("FPS", String.format(Locale.US, "%.2f", phoneCam.getFps()));
+            telemetry.addData("Frame Count", webcam.getFrameCount());
+            telemetry.addData("FPS", String.format(Locale.US, "%.2f", webcam.getFps()));
             telemetry.update();
         }
 
-        phoneCam.closeCameraDevice();
+        webcam.closeCameraDevice();
     }
 
 }
