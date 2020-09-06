@@ -38,7 +38,7 @@ public class Hardware {
     public Gyroscope imu;
 
     public double WHEEL_DIAMETER = 1.37795;
-    public double TICKS_PER_REV = 800;
+    public double TICKS_PER_REV = 1;
     public double ROT_WHEEL_DISTANCE = 12;
 
     public int prevX = 0;
