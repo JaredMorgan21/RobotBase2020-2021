@@ -39,9 +39,9 @@ public class Hardware {
     public Orientation prevAngles = new Orientation();
     public Gyroscope imu;
 
-    public double WHEEL_DIAMETER = 1.37795;
-    public double TICKS_PER_REV = 1;
-    public double ROT_WHEEL_DISTANCE = 12;
+    final public double WHEEL_DIAMETER = 1.37795;
+    final public double TICKS_PER_REV = 1;
+    final public double ROT_WHEEL_DISTANCE = 12;
 
     int x;
     int y;
