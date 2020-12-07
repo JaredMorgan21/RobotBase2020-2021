@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name="Motor Test", group="Test")
 public class MotorTest extends LinearOpMode {
-    private Hardware robot = new Hardware();
+    private Hardware robot = new Hardware(this);
 
     @Override
     public void runOpMode(){
